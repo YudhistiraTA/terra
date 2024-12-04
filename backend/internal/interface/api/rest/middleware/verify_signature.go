@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/YudhistiraTA/terra/internal/interface/api/rest/errors"
@@ -41,7 +42,10 @@ func verifySignature(c *gin.Context) {
 	}
 	fmt.Println(payload)
 
-	hmacSecret := "048ddcd839e185b13ed7aa1e6f5480466f4f7dcaf01bced37bd5ffc1fb22df40"
+	hmacSecret := os.Getenv("HMAC_SECRET")
+	if hmacSecret == "" {
+		panic("HMAC_SECRET environment variable is not set")
+	}
 	mac := hmac.New(sha512.New, []byte(hmacSecret))
 	mac.Write([]byte(payload))
 	expectedMAC := mac.Sum(nil)

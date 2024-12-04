@@ -1,9 +1,11 @@
 "use client";
+import useApiQuery from "@/hooks/useApiQuery";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { PasswordInput } from "../ui/password-input";
 
 export default function LoginForm() {
+  useApiQuery({ key: "health" });
   return (
     <form>
       <div className="grid w-full items-center gap-4">

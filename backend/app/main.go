@@ -6,9 +6,11 @@ import (
 	"net/http"
 
 	"github.com/YudhistiraTA/terra/internal/interface/api/rest"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	godotenv.Load()
 	port := 8000
 	app := rest.NewEntryPoint()
 	server := &http.Server{

@@ -38,9 +38,9 @@ export default function useApiQuery<K extends keyof QueryReturns>({
         },
         ...fetchOptions,
       });
-      console.log(res);
       if (!res.ok) {
-        throw new Error("Failed to fetch");
+        const body = await res.json();
+        throw new Error(body?.message || "Unknown error");
       }
       return await res.json();
     },
