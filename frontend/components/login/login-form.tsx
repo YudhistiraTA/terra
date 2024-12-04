@@ -5,7 +5,7 @@ import { Label } from "../ui/label";
 import { PasswordInput } from "../ui/password-input";
 
 export default function LoginForm() {
-  useApiQuery({ key: "health" });
+  useApiQuery({ key: "health", withoutAuth: true });
   return (
     <form>
       <div className="grid w-full items-center gap-4">

@@ -1,5 +1,4 @@
 "use client";
-import generateSignature from "@/lib/generateSignature";
 import {
   type QueryKeys,
   type QueryReturns,
@@ -11,6 +10,7 @@ export default function useApiQuery<K extends keyof QueryReturns>({
   key,
   fetchOptions,
   queryOptions,
+  withoutAuth = false,
 }: {
   key: QueryKeys;
   fetchOptions?: RequestInit;
@@ -18,24 +18,21 @@ export default function useApiQuery<K extends keyof QueryReturns>({
     UseQueryOptions<QueryReturns[K], Error>,
     "queryKey" | "queryFn" | "staleTime"
   >;
+  withoutAuth?: boolean;
 }) {
   const url = queryUrl[key];
   const baseUrl = process.env.NEXT_PUBLIC_API_URL;
   const endpoint = new URL(url, baseUrl);
 
-  const { signature, timestamp } = generateSignature({
-    method: "GET",
-    endpoint: url,
-  });
-
   const result = useQuery<QueryReturns[K]>({
     queryKey: [key],
     queryFn: async () => {
       const res = await fetch(endpoint, {
-        headers: {
-          "X-SIGNATURE": signature,
-          "X-TIMESTAMP": timestamp,
-        },
+        headers: !withoutAuth
+          ? {
+              Authorization: "Bearer " + localStorage.getItem("token"),
+            }
+          : undefined,
         ...fetchOptions,
       });
       if (!res.ok) {

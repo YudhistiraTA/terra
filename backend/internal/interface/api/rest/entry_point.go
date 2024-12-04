@@ -8,7 +8,6 @@ import (
 func NewEntryPoint() *gin.Engine {
 	app := gin.Default()
 	app.Use(middleware.CORSMiddleware())
-	app.Use(middleware.VerifySignature())
 	v1 := app.Group("/v1")
 	v1.GET("/health", func(ctx *gin.Context) { ctx.JSON(200, gin.H{"message": "OK"}) })
 	return app
