@@ -1,0 +1,44 @@
+volumes:
+  postgres_data:
+    driver: local
+  schema_volume:
+    driver: local
+    driver_opts:
+      type: none
+      device: ./backend/internal/infrastructure/db/sqlc/schema
+      o: bind
+services:
+  postgres:
+    image: postgres:latest
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - schema_volume:/docker-entrypoint-initdb.d
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: terra
+    ports:
+      - "5432:5432"
+  server:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    depends_on:
+      - postgres
+    ports:
+      - "8000:8000"
+    environment:
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: terra
+      SERVER_PORT: 8000
+  client:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    depends_on:
+      - server
+    ports:
+      - "3000:3000"
