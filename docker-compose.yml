@@ -34,6 +34,7 @@ services:
       DB_PORT: 5432
       DB_NAME: terra
       SERVER_PORT: 8000
+      JWT_SECRET: terra
   client:
     build:
       context: ./frontend
