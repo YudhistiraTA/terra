@@ -17,9 +17,10 @@ CREATE TABLE
     id UUID PRIMARY KEY DEFAULT gen_random_uuid (),
     title VARCHAR(255) NOT NULL,
     content TEXT NOT NULL,
-    user_id UUID REFERENCES users (id) ON DELETE CASCADE,
+    user_id UUID NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT NOW (),
-    updated_at TIMESTAMP NOT NULL DEFAULT NOW ()
+    updated_at TIMESTAMP NOT NULL DEFAULT NOW (),
+    CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
   );
 
 CREATE INDEX IF NOT EXISTS idx_posts_title_trgm ON posts USING gin (title gin_trgm_ops);

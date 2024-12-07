@@ -7,6 +7,8 @@ package sqlc
 
 import (
 	"context"
+
+	"github.com/google/uuid"
 )
 
 const getUserByEmail = `-- name: GetUserByEmail :one
@@ -31,15 +33,15 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 const updateRefreshById = `-- name: UpdateRefreshById :exec
 UPDATE users
 SET refresh_token = $2
-WHERE email = $1
+WHERE id = $1
 `
 
 type UpdateRefreshByIdParams struct {
-	Email        string
+	ID           uuid.UUID
 	RefreshToken string
 }
 
 func (q *Queries) UpdateRefreshById(ctx context.Context, arg UpdateRefreshByIdParams) error {
-	_, err := q.db.Exec(ctx, updateRefreshById, arg.Email, arg.RefreshToken)
+	_, err := q.db.Exec(ctx, updateRefreshById, arg.ID, arg.RefreshToken)
 	return err
 }

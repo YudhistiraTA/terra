@@ -7,7 +7,37 @@ package sqlc
 
 import (
 	"context"
+
+	"github.com/google/uuid"
 )
+
+const createPost = `-- name: CreatePost :exec
+INSERT INTO posts (title, content, user_id)
+VALUES ($1, $2, $3)
+RETURNING id, title, content, user_id, created_at, updated_at
+`
+
+type CreatePostParams struct {
+	Title   string
+	Content string
+	UserID  uuid.UUID
+}
+
+func (q *Queries) CreatePost(ctx context.Context, arg CreatePostParams) error {
+	_, err := q.db.Exec(ctx, createPost, arg.Title, arg.Content, arg.UserID)
+	return err
+}
+
+const deletePost = `-- name: DeletePost :exec
+DELETE FROM posts
+WHERE id = $1
+RETURNING id, title, content, user_id, created_at, updated_at
+`
+
+func (q *Queries) DeletePost(ctx context.Context, id uuid.UUID) error {
+	_, err := q.db.Exec(ctx, deletePost, id)
+	return err
+}
 
 const fuzzySearchPosts = `-- name: FuzzySearchPosts :many
 SELECT id, title, content, user_id, created_at, updated_at
@@ -50,4 +80,83 @@ func (q *Queries) FuzzySearchPosts(ctx context.Context) ([]Post, error) {
 		return nil, err
 	}
 	return items, nil
+}
+
+const getPostById = `-- name: GetPostById :one
+SELECT id, title, content, user_id, created_at, updated_at
+FROM posts
+WHERE id = $1
+`
+
+func (q *Queries) GetPostById(ctx context.Context, id uuid.UUID) (Post, error) {
+	row := q.db.QueryRow(ctx, getPostById, id)
+	var i Post
+	err := row.Scan(
+		&i.ID,
+		&i.Title,
+		&i.Content,
+		&i.UserID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const listPosts = `-- name: ListPosts :many
+SELECT id, title, content, user_id, created_at, updated_at
+FROM posts
+WHERE user_id = $1
+ORDER BY id
+LIMIT $1
+OFFSET $2
+`
+
+type ListPostsParams struct {
+	Limit  int32
+	Offset int32
+}
+
+func (q *Queries) ListPosts(ctx context.Context, arg ListPostsParams) ([]Post, error) {
+	rows, err := q.db.Query(ctx, listPosts, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Post
+	for rows.Next() {
+		var i Post
+		if err := rows.Scan(
+			&i.ID,
+			&i.Title,
+			&i.Content,
+			&i.UserID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const updatePost = `-- name: UpdatePost :exec
+UPDATE posts
+SET title = $1, content = $2
+WHERE id = $3
+RETURNING id, title, content, user_id, created_at, updated_at
+`
+
+type UpdatePostParams struct {
+	Title   string
+	Content string
+	ID      uuid.UUID
+}
+
+func (q *Queries) UpdatePost(ctx context.Context, arg UpdatePostParams) error {
+	_, err := q.db.Exec(ctx, updatePost, arg.Title, arg.Content, arg.ID)
+	return err
 }
