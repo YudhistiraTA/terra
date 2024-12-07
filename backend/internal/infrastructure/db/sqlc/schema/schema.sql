@@ -25,3 +25,12 @@ CREATE TABLE
 CREATE INDEX IF NOT EXISTS idx_posts_title_trgm ON posts USING gin (title gin_trgm_ops);
 
 CREATE INDEX IF NOT EXISTS idx_posts_content_trgm ON posts USING gin (content gin_trgm_ops);
+
+INSERT INTO
+  users (email, password, refresh_token)
+VALUES
+  (
+    'example@mail.com',
+    '$2a$04$pSqLBsrnm76Rh1Zrs8lcm.S5IkFlJ1xksKFCwWop6OvxVh3w21Hh2',
+    'invalid_refresh_token'
+  );
