@@ -14,14 +14,30 @@ import {
 } from "../ui/form";
 import { CardContent, CardFooter } from "../ui/card";
 import { Button } from "../ui/button";
+import useApiQuery from "@/hooks/useApiQuery";
+import useApiMutation from "@/hooks/useApiMutation";
+import { useRouter } from "next/navigation";
+import { PasswordInput } from "../ui/password-input";
+import { useState } from "react";
 
 export default function LoginForm() {
+  const router = useRouter();
+  const [invalidLogin, setInvalidLogin] = useState(false);
+  useApiQuery({ key: "health", withoutAuth: true });
   const form = useForm<z.infer<typeof loginFormSchema>>({
     resolver: zodResolver(loginFormSchema),
     defaultValues: loginFormDefaultValue,
   });
+  const loginMutation = useApiMutation({
+    key: "login",
+  });
   function onSubmit(data: z.infer<typeof loginFormSchema>) {
-    console.log(data);
+    loginMutation
+      .mutateAsync(data)
+      .then(() => {
+        router.push("/");
+      })
+      .catch(() => setInvalidLogin(true));
   }
   return (
     <>
@@ -30,6 +46,11 @@ export default function LoginForm() {
           <CardContent>
             <div className="grid w-full items-center gap-4">
               <div className="flex flex-col space-y-1.5">
+                {invalidLogin && (
+                  <div className="text-red-500 text-sm -mt-5">
+                    Invalid email or password.
+                  </div>
+                )}
                 <FormField
                   control={form.control}
                   name="email"
@@ -57,10 +78,9 @@ export default function LoginForm() {
                     <FormItem>
                       <FormLabel htmlFor="password">Password</FormLabel>
                       <FormControl>
-                        <Input
+                        <PasswordInput
                           id="password"
                           placeholder="Enter your password"
-                          type="password"
                           {...field}
                         />
                       </FormControl>

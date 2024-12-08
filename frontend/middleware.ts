@@ -16,17 +16,15 @@ export const config = {
 
 function redirectToLogin(request: NextRequest) {
   const response = NextResponse.redirect(new URL("/login", request.nextUrl));
-  response.cookies.delete("token");
+  response.cookies.delete("sessionToken");
+  response.cookies.delete("refreshToken");
   return response;
 }
 
 export function middleware(request: NextRequest) {
-  const token = request.cookies.get("token");
-  if (!token) {
-    return redirectToLogin(request);
-  }
-  const expiry = new Date(token.value.split(".")[1]);
-  if (expiry < new Date()) {
+  const sessionToken = request.cookies.get("sessionToken");
+  const refreshToken = request.cookies.get("refreshToken");
+  if (!sessionToken || !refreshToken) {
     return redirectToLogin(request);
   }
 }

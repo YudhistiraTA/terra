@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/YudhistiraTA/terra/internal/application/services"
-	"github.com/YudhistiraTA/terra/internal/interface/api/rest/dto/mapper"
 	"github.com/YudhistiraTA/terra/internal/interface/api/rest/dto/request"
 	"github.com/YudhistiraTA/terra/internal/interface/api/rest/dto/response"
 	"github.com/gin-gonic/gin"
@@ -37,6 +36,5 @@ func (uc *UserController) Login(ctx *gin.Context) {
 
 	ctx.SetCookie("sessionToken", result.SessionToken, 900, "/", "", false, true)
 	ctx.SetCookie("refreshToken", result.RefreshToken, 86400, "/", "", false, true)
-	response := mapper.ToUserLoginResponse(result)
-	ctx.JSON(200, gin.H{"message": "OK", "data": response})
+	ctx.JSON(200, gin.H{"message": "OK"})
 }

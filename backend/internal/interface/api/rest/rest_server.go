@@ -15,7 +15,9 @@ func NewRestServer(ctx context.Context, db *sqlc.Queries) *gin.Engine {
 	app.Use(middleware.CORSMiddleware())
 
 	v1 := app.Group("/v1")
-	v1.GET("/health", func(ctx *gin.Context) { ctx.JSON(200, gin.H{"message": "OK"}) })
+	v1.GET("/health", func(ctx *gin.Context) {
+		ctx.JSON(200, gin.H{"message": "OK"})
+	})
 
 	userService := services.NewUserService(ctx, db)
 

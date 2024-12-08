@@ -1,4 +1,8 @@
-import { HealthQueryKey, HealthQueryReturn, healthQueryUrl } from "./health";
+import {
+  type HealthQueryKey,
+  type HealthQueryReturn,
+  healthQueryUrl,
+} from "./health";
 
 export type QueryKeys = HealthQueryKey;
 export const queryUrl = {

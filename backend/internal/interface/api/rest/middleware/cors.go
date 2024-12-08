@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"os"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -14,12 +15,17 @@ func getAllowHeaders() string {
 		"Authorization",
 		"X-SIGNATURE",
 		"X-TIMESTAMP",
+		"Cookies",
 	}
 	return strings.Join(h, ", ")
 }
 
 func corsMiddleware(c *gin.Context) {
-	c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+	allowOrigins := os.Getenv("ALLOW_ORIGINS")
+	if allowOrigins == "" {
+		panic("CORS ALLOW_ORIGINS is not set")
+	}
+	c.Writer.Header().Set("Access-Control-Allow-Origin", allowOrigins)
 	c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
 	c.Writer.Header().Set("Access-Control-Allow-Headers", getAllowHeaders())
 	c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, PATCH, DELETE")

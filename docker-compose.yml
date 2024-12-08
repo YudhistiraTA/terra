@@ -35,6 +35,7 @@ services:
       DB_NAME: terra
       SERVER_PORT: 8000
       JWT_SECRET: terra
+      ALLOW_ORIGINS: http://localhost:3000
   client:
     build:
       context: ./frontend

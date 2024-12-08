@@ -24,15 +24,20 @@ export default function useApiQuery<K extends keyof QueryReturns>({
   const baseUrl = process.env.NEXT_PUBLIC_API_URL;
   const endpoint = new URL(url, baseUrl);
 
+  const headers = new Headers();
+  if (!withoutAuth) {
+    headers.append(
+      "Authorization",
+      "Bearer " + localStorage.getItem("sessionToken")
+    );
+  }
+
   const result = useQuery<QueryReturns[K]>({
     queryKey: [key],
     queryFn: async () => {
       const res = await fetch(endpoint, {
-        headers: !withoutAuth
-          ? {
-              Authorization: "Bearer " + localStorage.getItem("token"),
-            }
-          : undefined,
+        headers,
+        credentials: "include",
         ...fetchOptions,
       });
       if (!res.ok) {
