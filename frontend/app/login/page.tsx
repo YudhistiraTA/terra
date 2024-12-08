@@ -1,10 +1,7 @@
 import LoginForm from "@/components/login/login-form";
-import { Button } from "@/components/ui/button";
 import {
   Card,
-  CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -19,13 +16,7 @@ export default function Login() {
             <p>Login to your account.</p>
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <LoginForm />
-        </CardContent>
-        <CardFooter className="flex justify-between">
-          <Button variant="outline">Cancel</Button>
-          <Button>Login</Button>
-        </CardFooter>
+        <LoginForm />
       </Card>
     </div>
   );
