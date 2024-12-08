@@ -7,7 +7,6 @@ CREATE TABLE
     id UUID PRIMARY KEY DEFAULT gen_random_uuid (),
     email VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL,
-    refresh_token VARCHAR(255) NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT NOW (),
     updated_at TIMESTAMP NOT NULL DEFAULT NOW ()
   );
@@ -28,10 +27,9 @@ CREATE INDEX IF NOT EXISTS idx_posts_title_trgm ON posts USING gin (title gin_tr
 CREATE INDEX IF NOT EXISTS idx_posts_content_trgm ON posts USING gin (content gin_trgm_ops);
 
 INSERT INTO
-  users (email, password, refresh_token)
+  users (email, password)
 VALUES
   (
     'example@mail.com',
-    '$2a$04$pSqLBsrnm76Rh1Zrs8lcm.S5IkFlJ1xksKFCwWop6OvxVh3w21Hh2',
-    'invalid_refresh_token'
+    '$2a$04$pSqLBsrnm76Rh1Zrs8lcm.S5IkFlJ1xksKFCwWop6OvxVh3w21Hh2'
   );

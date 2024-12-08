@@ -20,10 +20,9 @@ type Post struct {
 }
 
 type User struct {
-	ID           uuid.UUID
-	Email        string
-	Password     string
-	RefreshToken string
-	CreatedAt    time.Time
-	UpdatedAt    time.Time
+	ID        uuid.UUID
+	Email     string
+	Password  string
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }

@@ -12,7 +12,7 @@ import (
 )
 
 const getUserByEmail = `-- name: GetUserByEmail :one
-SELECT id, email, password, refresh_token, created_at, updated_at FROM users
+SELECT id, email, password, created_at, updated_at FROM users
 WHERE email = $1 LIMIT 1
 `
 
@@ -23,25 +23,26 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 		&i.ID,
 		&i.Email,
 		&i.Password,
-		&i.RefreshToken,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
 	return i, err
 }
 
-const updateRefreshById = `-- name: UpdateRefreshById :exec
-UPDATE users
-SET refresh_token = $2
-WHERE id = $1
+const getUserById = `-- name: GetUserById :one
+SELECT id, email, password, created_at, updated_at FROM users
+WHERE id = $1 LIMIT 1
 `
 
-type UpdateRefreshByIdParams struct {
-	ID           uuid.UUID
-	RefreshToken string
-}
-
-func (q *Queries) UpdateRefreshById(ctx context.Context, arg UpdateRefreshByIdParams) error {
-	_, err := q.db.Exec(ctx, updateRefreshById, arg.ID, arg.RefreshToken)
-	return err
+func (q *Queries) GetUserById(ctx context.Context, id uuid.UUID) (User, error) {
+	row := q.db.QueryRow(ctx, getUserById, id)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Email,
+		&i.Password,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
 }

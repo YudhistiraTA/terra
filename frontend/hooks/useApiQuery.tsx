@@ -24,10 +24,11 @@ export default function useApiQuery<K extends keyof QueryReturns>({
   const url = queryUrl[key];
   const baseUrl = process.env.NEXT_PUBLIC_API_URL;
   const endpoint = new URL(url, baseUrl);
+  const sessionToken = cookies.get("sessionToken");
 
   const headers = new Headers();
   if (!withoutAuth) {
-    headers.append("Authorization", "Bearer " + cookies.get("sessionToken"));
+    headers.append("Authorization", "Bearer " + sessionToken);
   }
 
   const result = useQuery<QueryReturns[K]>({

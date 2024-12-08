@@ -51,11 +51,6 @@ func (us *UserService) Login(user command.UserLoginCommand) (*command.UserLoginC
 		return nil, err
 	}
 
-	err = us.db.UpdateRefreshById(us.ctx, sqlc.UpdateRefreshByIdParams{ID: dbUser.ID, RefreshToken: refreshId})
-	if err != nil {
-		return nil, err
-	}
-
 	return &command.UserLoginCommandResult{
 		RefreshToken:       refreshId,
 		SessionToken:       sessionId,

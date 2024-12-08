@@ -14,7 +14,6 @@ import {
 } from "../ui/form";
 import { CardContent, CardFooter } from "../ui/card";
 import { Button } from "../ui/button";
-import useApiQuery from "@/hooks/useApiQuery";
 import useApiMutation from "@/hooks/useApiMutation";
 import { useRouter } from "next/navigation";
 import { PasswordInput } from "../ui/password-input";
@@ -23,7 +22,6 @@ import { useState } from "react";
 export default function LoginForm() {
   const router = useRouter();
   const [invalidLogin, setInvalidLogin] = useState(false);
-  useApiQuery({ key: "health", withoutAuth: true });
   const form = useForm<z.infer<typeof loginFormSchema>>({
     resolver: zodResolver(loginFormSchema),
     defaultValues: loginFormDefaultValue,
