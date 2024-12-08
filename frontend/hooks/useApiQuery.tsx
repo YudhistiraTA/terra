@@ -5,6 +5,7 @@ import {
   queryUrl,
 } from "@/services/queries";
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
+import cookies from "js-cookie";
 
 export default function useApiQuery<K extends keyof QueryReturns>({
   key,
@@ -26,10 +27,7 @@ export default function useApiQuery<K extends keyof QueryReturns>({
 
   const headers = new Headers();
   if (!withoutAuth) {
-    headers.append(
-      "Authorization",
-      "Bearer " + localStorage.getItem("sessionToken")
-    );
+    headers.append("Authorization", "Bearer " + cookies.get("sessionToken"));
   }
 
   const result = useQuery<QueryReturns[K]>({

@@ -10,6 +10,7 @@ import {
   UseMutationOptions,
   useQueryClient,
 } from "@tanstack/react-query";
+import cookies from "js-cookie";
 
 export default function useApiMutation<K extends keyof MutationReturns>({
   key,
@@ -45,10 +46,7 @@ export default function useApiMutation<K extends keyof MutationReturns>({
 
   const headers = new Headers();
   if (!withoutAuth) {
-    headers.append(
-      "Authorization",
-      "Bearer " + localStorage.getItem("sessionToken")
-    );
+    headers.append("Authorization", "Bearer " + cookies.get("sessionToken"));
   }
 
   const mutation = useMutation({
