@@ -86,8 +86,6 @@ func Authentication(serverCtx context.Context, db *sqlc.Queries) gin.HandlerFunc
 				ctx.Abort()
 				return
 			}
-			ctx.Next()
-			return
 		}
 		claims, _ := jwtToken.Claims.(*common.UserClaim)
 

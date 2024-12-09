@@ -36,5 +36,5 @@ func (uc *UserController) Login(ctx *gin.Context) {
 
 	ctx.SetCookie("sessionToken", result.SessionToken, 900, "/", "", false, false)
 	ctx.SetCookie("refreshToken", result.RefreshToken, 86400, "/", "", false, false)
-	ctx.JSON(200, gin.H{"message": "OK"})
+	ctx.JSON(200, response.NewSuccessResponse(nil))
 }

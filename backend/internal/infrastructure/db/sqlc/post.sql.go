@@ -42,21 +42,33 @@ func (q *Queries) DeletePost(ctx context.Context, id uuid.UUID) error {
 const fuzzySearchPosts = `-- name: FuzzySearchPosts :many
 SELECT id, title, content, user_id, created_at, updated_at
 FROM posts
-WHERE title % 'search_term' OR content % 'search_term'
+WHERE 
+  posts.user_id = $1 
+  AND ($2::text IS NULL OR title % $2::text OR content % $2::text)
+  AND ($3::text IS NULL OR created_at <= (SELECT created_at FROM posts WHERE id::text = $3::text))
 ORDER BY
   CASE
-    WHEN title % 'search_term' THEN similarity(title, 'search_term')
+    WHEN $2::text IS NOT NULL AND title % $2::text THEN similarity(title, $2::text)
     ELSE 0
   END DESC,
   CASE
-    WHEN content % 'search_term' THEN similarity(content, 'search_term')
+    WHEN $2::text IS NOT NULL AND content % $2::text THEN similarity(content, $2::text)
     ELSE 0
+  END DESC,
+  CASE
+    WHEN $2::text IS NULL THEN created_at
   END DESC
-LIMIT 10
+LIMIT 11
 `
 
-func (q *Queries) FuzzySearchPosts(ctx context.Context) ([]Post, error) {
-	rows, err := q.db.Query(ctx, fuzzySearchPosts)
+type FuzzySearchPostsParams struct {
+	UserID     uuid.UUID
+	SearchTerm *string
+	Cursor     *string
+}
+
+func (q *Queries) FuzzySearchPosts(ctx context.Context, arg FuzzySearchPostsParams) ([]Post, error) {
+	rows, err := q.db.Query(ctx, fuzzySearchPosts, arg.UserID, arg.SearchTerm, arg.Cursor)
 	if err != nil {
 		return nil, err
 	}
