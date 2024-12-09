@@ -2,7 +2,7 @@
 import { useForm } from "react-hook-form";
 import { Input } from "../ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { loginFormDefaultValue, loginFormSchema } from "./login-form-schema";
+import { loginFormDefaultValue, loginFormSchema } from "./loginFormSchema";
 import { z } from "zod";
 import {
   Form,

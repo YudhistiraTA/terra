@@ -17,7 +17,16 @@ func NewPostService(ctx context.Context, db *sqlc.Queries) *PostService {
 	return &PostService{ctx, db}
 }
 
-func (ps *PostService) CreatePost() {
+func (ps *PostService) CreatePost(cmd command.CreatePostCommand) error {
+	err := ps.db.CreatePost(ps.ctx, sqlc.CreatePostParams{
+		Title:   cmd.Title,
+		Content: cmd.Content,
+		UserID:  cmd.UserId,
+	})
+	if err != nil {
+		return err
+	}
+	return nil
 
 }
 

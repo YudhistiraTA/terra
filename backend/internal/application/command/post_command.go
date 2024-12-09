@@ -19,3 +19,9 @@ type PostListCommandResult struct {
 	NextCursor     *uuid.UUID
 	PreviousCursor *uuid.UUID
 }
+
+type CreatePostCommand struct {
+	Title   string
+	Content string
+	UserId  uuid.UUID
+}
