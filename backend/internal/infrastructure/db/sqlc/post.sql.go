@@ -47,18 +47,8 @@ WHERE
   AND ($2::text IS NULL OR title % $2::text OR content % $2::text)
   AND ($3::text IS NULL OR created_at <= (SELECT created_at FROM posts WHERE id::text = $3::text))
 ORDER BY
-  CASE
-    WHEN $2::text IS NOT NULL AND title % $2::text THEN similarity(title, $2::text)
-    ELSE 0
-  END DESC,
-  CASE
-    WHEN $2::text IS NOT NULL AND content % $2::text THEN similarity(content, $2::text)
-    ELSE 0
-  END DESC,
-  CASE
-    WHEN $2::text IS NULL THEN created_at
-  END DESC
-LIMIT 11
+    created_at DESC
+LIMIT 6
 `
 
 type FuzzySearchPostsParams struct {
@@ -112,6 +102,31 @@ func (q *Queries) GetPostById(ctx context.Context, id uuid.UUID) (Post, error) {
 		&i.UpdatedAt,
 	)
 	return i, err
+}
+
+const getPreviousCursor = `-- name: GetPreviousCursor :one
+SELECT id
+FROM posts
+WHERE 
+  posts.user_id = $1
+  AND ($2::text IS NULL OR title % $2::text OR content % $2::text)
+  AND created_at > (SELECT created_at FROM posts WHERE posts.id::text = $3)
+ORDER BY created_at ASC
+LIMIT 5
+offset 4
+`
+
+type GetPreviousCursorParams struct {
+	UserID     uuid.UUID
+	SearchTerm *string
+	Cursor     uuid.UUID
+}
+
+func (q *Queries) GetPreviousCursor(ctx context.Context, arg GetPreviousCursorParams) (uuid.UUID, error) {
+	row := q.db.QueryRow(ctx, getPreviousCursor, arg.UserID, arg.SearchTerm, arg.Cursor)
+	var id uuid.UUID
+	err := row.Scan(&id)
+	return id, err
 }
 
 const listPosts = `-- name: ListPosts :many

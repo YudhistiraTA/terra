@@ -15,6 +15,7 @@ type PostListCommandResultPost struct {
 }
 
 type PostListCommandResult struct {
-	Posts      []PostListCommandResultPost
-	NextCursor *uuid.UUID
+	Posts          []PostListCommandResultPost
+	NextCursor     *uuid.UUID
+	PreviousCursor *uuid.UUID
 }

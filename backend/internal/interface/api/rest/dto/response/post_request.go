@@ -7,6 +7,7 @@ type PostListReponsePost struct {
 }
 
 type PostListReponse struct {
-	Posts      []PostListReponsePost `json:"posts"`
-	NextCursor *string               `json:"next_cursor"`
+	Posts          []PostListReponsePost `json:"posts"`
+	NextCursor     *string               `json:"next_cursor"`
+	PreviousCursor *string               `json:"previous_cursor"`
 }

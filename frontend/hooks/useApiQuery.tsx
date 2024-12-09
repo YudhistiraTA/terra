@@ -8,6 +8,11 @@ import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 
+type WrappedReturn<T> = {
+  message: string;
+  data: T;
+};
+
 export default function useApiQuery<K extends keyof QueryReturns>({
   key,
   fetchOptions,
@@ -15,9 +20,11 @@ export default function useApiQuery<K extends keyof QueryReturns>({
   withoutAuth = false,
 }: {
   key: QueryKeys;
-  fetchOptions?: RequestInit;
+  fetchOptions?: RequestInit & {
+    params?: Record<string, string | number | undefined | null>;
+  };
   queryOptions?: Omit<
-    UseQueryOptions<QueryReturns[K], Error>,
+    UseQueryOptions<WrappedReturn<QueryReturns[K]>, Error>,
     "queryKey" | "queryFn" | "staleTime"
   >;
   withoutAuth?: boolean;
@@ -26,6 +33,11 @@ export default function useApiQuery<K extends keyof QueryReturns>({
   const url = queryUrl[key];
   const baseUrl = process.env.NEXT_PUBLIC_API_URL;
   const endpoint = new URL(url, baseUrl);
+  if (fetchOptions?.params) {
+    Object.entries(fetchOptions.params).forEach(([key, value]) => {
+      if (value) endpoint.searchParams.append(key, `${value}`);
+    });
+  }
   const sessionToken = cookies.get("sessionToken");
 
   const headers = new Headers();
@@ -33,8 +45,8 @@ export default function useApiQuery<K extends keyof QueryReturns>({
     headers.append("Authorization", "Bearer " + sessionToken);
   }
 
-  const result = useQuery<QueryReturns[K]>({
-    queryKey: [key],
+  const result = useQuery<WrappedReturn<QueryReturns[K]>>({
+    queryKey: [key, endpoint.toString()],
     queryFn: async () => {
       const res = await fetch(endpoint, {
         headers,

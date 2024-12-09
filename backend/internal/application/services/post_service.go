@@ -27,6 +27,23 @@ func (ps *PostService) GetPostList(cmd command.PostListCommand) (*command.PostLi
 		cursorString := cmd.Cursor.String()
 		cursor = &cursorString
 	}
+	var previousCursor *uuid.UUID
+	if cursor != nil {
+		currentCursor := uuid.MustParse(*cursor)
+		pc, err := ps.db.GetPreviousCursor(ps.ctx, sqlc.GetPreviousCursorParams{
+			Cursor:     currentCursor,
+			UserID:     cmd.UserId,
+			SearchTerm: cmd.Search,
+		})
+		if err != nil {
+			if err.Error() != "no rows in result set" {
+				return nil, err
+			}
+		}
+		if pc != uuid.Nil {
+			previousCursor = &pc
+		}
+	}
 	dbPost, err := ps.db.FuzzySearchPosts(ps.ctx, sqlc.FuzzySearchPostsParams{
 		SearchTerm: cmd.Search,
 		Cursor:     cursor,
@@ -55,7 +72,8 @@ func (ps *PostService) GetPostList(cmd command.PostListCommand) (*command.PostLi
 		})
 	}
 	return &command.PostListCommandResult{
-		Posts:      posts,
-		NextCursor: nextCursor,
+		Posts:          posts,
+		NextCursor:     nextCursor,
+		PreviousCursor: previousCursor,
 	}, nil
 }

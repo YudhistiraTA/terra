@@ -8,8 +8,8 @@ import {
 
 export default function Login() {
   return (
-    <div className="flex justify-center items-center bg-gray-950 min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <Card className="w-[350px] bg-gray-100 shadow-xl">
+    <div className="flex justify-center items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
+      <Card className="w-[350px] bg-stone-100 shadow-xl shadow-stone-700">
         <CardHeader>
           <CardTitle>Terra</CardTitle>
           <CardDescription>

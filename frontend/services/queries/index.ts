@@ -3,9 +3,20 @@ import {
   type HealthQueryReturn,
   healthQueryUrl,
 } from "./health";
+import {
+  postQueryUrl,
+  type PostQueryKeys,
+  type PostQueryReturns,
+} from "./posts";
 
-export type QueryKeys = HealthQueryKey;
+export type QueryKeys = HealthQueryKey | PostQueryKeys;
 export const queryUrl = {
   ...healthQueryUrl,
+  ...postQueryUrl,
 };
-export type QueryReturns = HealthQueryReturn;
+
+export type QueryReturns = {
+  [K in HealthQueryKey]: HealthQueryReturn[K];
+} & {
+  [K in PostQueryKeys]: PostQueryReturns[K];
+};

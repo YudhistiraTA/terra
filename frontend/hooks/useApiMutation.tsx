@@ -13,6 +13,11 @@ import {
 import cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 
+type WrappedReturn<T> = {
+  message: string;
+  data: T;
+};
+
 export default function useApiMutation<K extends keyof MutationReturns>({
   key,
   fetchOptions,
@@ -21,7 +26,11 @@ export default function useApiMutation<K extends keyof MutationReturns>({
 }: {
   key: MutationKeys;
   fetchOptions?: RequestInit;
-  mutationOptions?: UseMutationOptions<MutationReturns[K], Error, unknown>;
+  mutationOptions?: UseMutationOptions<
+    WrappedReturn<MutationReturns[K]>,
+    Error,
+    unknown
+  >;
   withoutAuth?: boolean;
 }) {
   const router = useRouter();
@@ -55,7 +64,7 @@ export default function useApiMutation<K extends keyof MutationReturns>({
     mutationKey: [key],
     mutationFn: async (
       body?: unknown
-    ): Promise<{ message: string; data: MutationReturns[K] }> => {
+    ): Promise<WrappedReturn<MutationReturns[K]>> => {
       const res = await fetch(endpoint, {
         headers,
         method,

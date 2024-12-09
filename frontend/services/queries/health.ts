@@ -5,5 +5,5 @@ export const healthQueryUrl: QueryUrl<HealthQueryKey> = {
   health: "/v1/health",
 };
 export type HealthQueryReturn = {
-  health: { message: string };
+  health: null;
 };

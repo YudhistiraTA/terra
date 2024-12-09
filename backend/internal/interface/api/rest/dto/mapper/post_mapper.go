@@ -7,13 +7,19 @@ import (
 
 func ToPostListResponse(postListCommandResult *command.PostListCommandResult) response.PostListReponse {
 	var nextCursor *string
+	var previousCursor *string
 	if postListCommandResult.NextCursor != nil {
 		nextCursorString := postListCommandResult.NextCursor.String()
 		nextCursor = &nextCursorString
 	}
+	if postListCommandResult.PreviousCursor != nil {
+		previousCursorString := postListCommandResult.PreviousCursor.String()
+		previousCursor = &previousCursorString
+	}
 	postListResponse := response.PostListReponse{
-		Posts:      []response.PostListReponsePost{},
-		NextCursor: nextCursor,
+		Posts:          []response.PostListReponsePost{},
+		NextCursor:     nextCursor,
+		PreviousCursor: previousCursor,
 	}
 
 	for _, post := range postListCommandResult.Posts {

@@ -1,9 +1,18 @@
-import Dashboard from "@/components/dashboard/dashboard";
+import PostTable from "@/components/dashboard/postTable";
+import Header from "@/components/header/header";
 
 export default function Home() {
   return (
-    <div>
-      <Dashboard />
+    <div className="max-h-dvh w-full grow text-white gap-16">
+      <Header />
+      <div className="flex flex-col md:flex-row w-full">
+        <div className="flex-1 h-fit p-4 rounded-lg bg-stone-800 m-4">
+          <PostTable />
+        </div>
+        <div className="flex-1 h-fit p-4 rounded-lg bg-stone-800 m-4 md:my-4 sm:my-0">
+          a
+        </div>
+      </div>
     </div>
   );
 }

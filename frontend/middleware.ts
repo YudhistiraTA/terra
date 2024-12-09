@@ -10,7 +10,7 @@ export const config = {
      * - _next/image (image optimization files)
      * - favicon.ico, sitemap.xml, robots.txt (metadata files)
      */
-    "/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|login).*)",
+    "/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)",
   ],
 };
 
@@ -24,6 +24,13 @@ function redirectToLogin(request: NextRequest) {
 export function middleware(request: NextRequest) {
   const sessionToken = request.cookies.get("sessionToken");
   const refreshToken = request.cookies.get("refreshToken");
+  if (request.nextUrl.pathname === "/login") {
+    if (sessionToken && refreshToken) {
+      return NextResponse.redirect(new URL("/", request.nextUrl));
+    } else {
+      return NextResponse.next();
+    }
+  }
   if (!sessionToken || !refreshToken) {
     return redirectToLogin(request);
   }
