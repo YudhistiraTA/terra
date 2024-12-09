@@ -6,6 +6,7 @@ import {
 } from "@/services/queries";
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import cookies from "js-cookie";
+import { useRouter } from "next/navigation";
 
 export default function useApiQuery<K extends keyof QueryReturns>({
   key,
@@ -21,6 +22,7 @@ export default function useApiQuery<K extends keyof QueryReturns>({
   >;
   withoutAuth?: boolean;
 }) {
+  const router = useRouter();
   const url = queryUrl[key];
   const baseUrl = process.env.NEXT_PUBLIC_API_URL;
   const endpoint = new URL(url, baseUrl);
@@ -40,6 +42,12 @@ export default function useApiQuery<K extends keyof QueryReturns>({
         ...fetchOptions,
       });
       if (!res.ok) {
+        if (res.status === 401) {
+          cookies.remove("sessionToken");
+          cookies.remove("refreshToken");
+          router.push("/login");
+          throw new Error("Unauthorized");
+        }
         const body = await res.json();
         throw new Error(body?.message || "Unknown error");
       }

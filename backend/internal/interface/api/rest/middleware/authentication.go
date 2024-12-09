@@ -46,7 +46,7 @@ func Authentication(serverCtx context.Context, db *sqlc.Queries) gin.HandlerFunc
 					return
 				}
 				refreshTokenClaims, err := jwt.ParseWithClaims(refreshToken, &common.UserClaim{}, func(token *jwt.Token) (interface{}, error) {
-					return jwtSecret, nil
+					return []byte(jwtSecret), nil
 				})
 				if err != nil {
 					ctx.JSON(401, ErrUnauthorized)
@@ -54,7 +54,7 @@ func Authentication(serverCtx context.Context, db *sqlc.Queries) gin.HandlerFunc
 					return
 				}
 				claims, _ := refreshTokenClaims.Claims.(*common.UserClaim)
-				uuid, err := uuid.FromBytes([]byte(claims.ID))
+				uuid, err := uuid.Parse(claims.ID)
 				if err != nil {
 					ctx.JSON(401, ErrUnauthorized)
 					ctx.Abort()
@@ -86,6 +86,8 @@ func Authentication(serverCtx context.Context, db *sqlc.Queries) gin.HandlerFunc
 				ctx.Abort()
 				return
 			}
+			ctx.Next()
+			return
 		}
 		claims, _ := jwtToken.Claims.(*common.UserClaim)
 

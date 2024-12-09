@@ -11,6 +11,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import cookies from "js-cookie";
+import { useRouter } from "next/navigation";
 
 export default function useApiMutation<K extends keyof MutationReturns>({
   key,
@@ -23,6 +24,7 @@ export default function useApiMutation<K extends keyof MutationReturns>({
   mutationOptions?: UseMutationOptions<MutationReturns[K], Error, unknown>;
   withoutAuth?: boolean;
 }) {
+  const router = useRouter();
   const { url, method, refetchQueries } = mutationConfig[key];
   const queryClient = useQueryClient();
   const baseUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -62,6 +64,12 @@ export default function useApiMutation<K extends keyof MutationReturns>({
         ...fetchOptions,
       });
       if (!res.ok) {
+        if (res.status === 401) {
+          cookies.remove("sessionToken");
+          cookies.remove("refreshToken");
+          router.push("/login");
+          throw new Error("Unauthorized");
+        }
         const body = await res.json();
         throw new Error(body?.message || "Unknown error");
       }
