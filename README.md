@@ -1,6 +1,6 @@
 # Terra
 
-This is a simple application which only has a login feature, a note list for logged in user, and the ability to create, update, and delete the notes.
+This is a simple application which only has a login feature, a note list for logged in user, and the ability to create the notes.
 
 ## How to run
 
